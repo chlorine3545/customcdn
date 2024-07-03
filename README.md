@@ -18,4 +18,4 @@ This repository contains some commonly used files, including fonts and JavaScrip
 **This repository is not a private CDN for accelerating images or resources but should be seen as a supplementary submission for public resources not directly included. Anyone can reference the resources in this repository through jsDelivr, etc., without violating laws, regulations, and platform-related provisions. I promise not to use the public welfare CDN for private purposes, nor will it be used as a tool for sharing large resources like an image hosting service without the permission of the manager.**
 
 > [!important]
-> Strongly against any abuse of public services! Support the open-source movement, and salute the developers who selflessly provide public services!
+> Strongly against any abuse of public services! Support the great open-source cause, and salute the developers who selflessly provide public services!
