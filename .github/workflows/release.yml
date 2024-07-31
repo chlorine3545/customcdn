@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main  # 修改为你的主分支名称，如 master
+  workflow_dispatch:  # 添加这个以支持手动触发
 
 jobs:
   create_release:
@@ -20,8 +21,8 @@ jobs:
           echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
           # 获取最近提交的短哈希
           echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          # 获取当前日期
-          echo "CURRENT_DATE=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+          # 获取当前日期，设置为东八区（中国标准时间）
+          echo "CURRENT_DATE=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
 
       - name: Create Release
         uses: softprops/action-gh-release@v2  # 使用 GitHub Action 发布 Release
