@@ -1,44 +1,33 @@
-name: Create Release
+name: Auto Release on Push
 
 on:
   push:
     branches:
-      - main  # 修改为你希望触发 release 的分支
+      - main  # 修改为你的主分支名称，如 master
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
+  create_release:
+    runs-on: ubuntu-latest  # 指定运行环境
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3  # 使用最新版本的 actions/checkout
+      - name: Checkout code
+        uses: actions/checkout@v3  # 检出代码库
 
-    - name: Get current date
-      id: get_date
-      run: echo "RELEASE_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+      - name: Get commit info
+        id: commit_info
+        run: |
+          # 获取最近提交的消息
+          echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+          # 获取最近提交的短哈希
+          echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          # 获取当前日期
+          echo "CURRENT_DATE=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.sha }}
-        release_name: Release ${{ env.RELEASE_DATE }}
-        body: |
-          ${{ github.event.head_commit.message }}
-        draft: false
-        prerelease: false
-
-    - name: Archive code files
-      run: zip -r source_code_${{ env.RELEASE_DATE }}.zip .
-
-    - name: Upload release asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./source_code_${{ env.RELEASE_DATE }}.zip
-        asset_name: source_code_${{ env.RELEASE_DATE }}.zip
-        asset_content_type: application/zip
+      - name: Create Release
+        uses: softprops/action-gh-release@v1  # 使用 GitHub Action 发布 Release
+        with:
+          tag_name: ${{ env.COMMIT_HASH }}  # 使用提交的短哈希作为标签
+          release_name: ${{ env.CURRENT_DATE }}  # 使用当前日期作为 Release 标题
+          body: ${{ env.COMMIT_MESSAGE }}  # 使用提交信息作为 Release 内容
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub 提供的自动授权 token
