@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # 检出代码库
+        uses: actions/checkout@v4  # 检出代码库
 
       - name: Get commit info
         id: commit_info
@@ -24,10 +24,10 @@ jobs:
           echo "CURRENT_DATE=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1  # 使用 GitHub Action 发布 Release
+        uses: softprops/action-gh-release@v2  # 使用 GitHub Action 发布 Release
         with:
+          name: ${{ env.CURRENT_DATE }}  # 使用当前日期作为 Release 名称
           tag_name: ${{ env.COMMIT_HASH }}  # 使用提交的短哈希作为标签
-          release_name: ${{ env.CURRENT_DATE }}  # 使用当前日期作为 Release 标题
           body: ${{ env.COMMIT_MESSAGE }}  # 使用提交信息作为 Release 内容
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub 提供的自动授权 token
