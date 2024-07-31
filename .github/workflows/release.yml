@@ -1,0 +1,44 @@
+name: Create Release
+
+on:
+  push:
+    branches:
+      - main  # 修改为你希望触发 release 的分支
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3  # 使用最新版本的 actions/checkout
+
+    - name: Get current date
+      id: get_date
+      run: echo "RELEASE_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.sha }}
+        release_name: Release ${{ env.RELEASE_DATE }}
+        body: |
+          ${{ github.event.head_commit.message }}
+        draft: false
+        prerelease: false
+
+    - name: Archive code files
+      run: zip -r source_code_${{ env.RELEASE_DATE }}.zip .
+
+    - name: Upload release asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./source_code_${{ env.RELEASE_DATE }}.zip
+        asset_name: source_code_${{ env.RELEASE_DATE }}.zip
+        asset_content_type: application/zip
